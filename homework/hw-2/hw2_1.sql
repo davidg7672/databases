@@ -17,6 +17,11 @@
 --   * Be sure your SQL code is well formatted (according to the style guides).
 --   * Add two INSERT statements per table that violate constraints and
 --     comment these out for the final submission
+-- Dropping Tables (order matters: child → parent)
+DROP TABLE IF EXISTS segment;
+DROP TABLE IF EXISTS flight;
+DROP TABLE IF EXISTS airline;
+DROP TABLE IF EXISTS airport;
 
 -- ======================================================================
 -- airport(id, name, city, state, elevation)
@@ -30,29 +35,34 @@ CREATE TABLE airport (
     elevation INT NOT NULL,
     PRIMARY KEY (id)
 );
-INSERT INTO airport (id, name, city, state, elevation)
-VALUES
-('JFK', 'John F. Kennedy International Airport', 'New York', 'NY', 13),
-('ORD', 'O\' Hare International Airport, 'Chicago', 'IL', 668),
-('ATL', 'Hartsfield-Jackson Atlanta International Airport', 'Atlanta', 'GA', 1026);
 
+INSERT INTO airport (id, name, city, state, elevation) VALUES
+('JFK', 'John F. Kennedy International Airport', 'New York', 'NY', 13),
+('ORD', 'O''Hare International Airport', 'Chicago', 'IL', 668),
+('ATL', 'Hartsfield-Jackson Atlanta International Airport', 'Atlanta', 'GA', 1026),
+('SEA', 'Seattle-Tacoma International Airport', 'Seattle', 'WA', 433),
+('DAL', 'Dallas Love Field', 'Dallas', 'TX', 487),
+('LAX', 'Los Angeles International Airport', 'Los Angeles', 'CA', 125),
+('HNL', 'Daniel K. Inouye International Airport', 'Honolulu', 'HI', 13),
+('SFO', 'San Francisco International Airport', 'San Francisco', 'CA', 13),
+('PHX', 'Phoenix Sky Harbor International Airport', 'Phoenix', 'AZ', 1135);
 
 -- ======================================================================
--- airport(code, name, main_hub, yr_founded)
+-- airline(code, name, main_hub, yr_founded)
 -- Stores information about airlines.
 -- ======================================================================
 CREATE TABLE airline (
     code CHAR(2),
     name VARCHAR(100) NOT NULL,
-    main_hub VARCHAR(3) NOT NULL,
-    yr_founded SMALLINT CHECK (yr_founded > 1900) NOT NULL,
+    main_hub CHAR(3) NOT NULL,
+    yr_founded SMALLINT NOT NULL CHECK (yr_founded > 1900),
     PRIMARY KEY (code),
     FOREIGN KEY (main_hub) REFERENCES airport(id)
 );
-INSERT INTO airline (code, name, main_hub, yr_founded)
-VALUES
-('AS', 'Alaska Airlines', 'SEA', 1932)
-('WN', 'Southwest Airlines', 'DAL', 1967)
+
+INSERT INTO airline (code, name, main_hub, yr_founded) VALUES
+('AS', 'Alaska Airlines', 'SEA', 1932),
+('WN', 'Southwest Airlines', 'DAL', 1967),
 ('UA', 'United Airlines', 'ORD', 1926);
 
 -- ======================================================================
@@ -70,10 +80,10 @@ CREATE TABLE flight(
     FOREIGN KEY (departure) REFERENCES airport(id),
     FOREIGN KEY (arrival) REFERENCES airport(id)
 );
-INSERT INTO flight (airline, flight_number, departure, arrival, flights_per_wk)
-VALUES
+
+INSERT INTO flight (airline, flight_number, departure, arrival, flights_per_wk) VALUES
 ('AS', 123, 'SEA', 'LAX', 14),
-('WN', 250, 'DAL' , 'LAX', 21),
+('WN', 250, 'DAL', 'LAX', 21),
 ('UA', 1, 'ORD', 'HNL', 21);
 
 -- ======================================================================
@@ -87,8 +97,9 @@ CREATE TABLE segment (
     start_airport CHAR(3) NOT NULL,
     end_airport CHAR(3) NOT NULL,
     PRIMARY KEY (airline, flight_number, segment_offset),
-    FOREIGN KEY (airline) REFERENCES airline(code),
-    FOREIGN KEY (flight_number) REFERENCES flight(flight_number)
+    FOREIGN KEY (airline, flight_number) REFERENCES flight(airline, flight_number),
+    FOREIGN KEY (start_airport) REFERENCES airport(id),
+    FOREIGN KEY (end_airport) REFERENCES airport(id)
 );
 
 INSERT INTO segment (airline, flight_number, segment_offset, start_airport, end_airport) VALUES
