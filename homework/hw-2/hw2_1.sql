@@ -20,7 +20,7 @@
 
 -- ======================================================================
 -- airport(id, name, city, state, elevation)
--- Stores information about aiports.
+-- Stores information about airports.
 -- ======================================================================
 CREATE TABLE airport (
     id CHAR(3),
@@ -81,14 +81,16 @@ VALUES
 -- Stores information about flight segments.
 -- ======================================================================
 CREATE TABLE segment (
-    airline CHAR(3),
+    airline CHAR(2),
     flight_number INT NOT NULL,
     segment_offset INT NOT NULL,
     start_airport CHAR(3) NOT NULL,
     end_airport CHAR(3) NOT NULL,
     PRIMARY KEY (airline, flight_number, segment_offset),
-    FOREIGN KEY (airline, flight_number);
-)
+    FOREIGN KEY (airline) REFERENCES airline(code),
+    FOREIGN KEY (flight_number) REFERENCES flight(flight_number)
+);
+
 INSERT INTO segment (airline, flight_number, segment_offset, start_airport, end_airport) VALUES
 ('UA', 1, 1, 'ORD', 'SFO'),
 ('UA', 1, 2, 'SFO', 'HNL'),
