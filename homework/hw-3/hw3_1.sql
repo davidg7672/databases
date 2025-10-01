@@ -3,7 +3,8 @@
  *  NAME:    David Sosa
  *  ASSIGN:  HW-3, Part 1
  *  COURSE:  CPSC 321, Fall 2025
- *  DESC:    ... description ....
+ *  DESC:    Table definition for part one. All tables defined and data
+ *           inserted to those tables. 
  * 
  *======================================================================*/
 
