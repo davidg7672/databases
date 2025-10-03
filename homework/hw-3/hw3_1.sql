@@ -8,15 +8,6 @@
  * 
  *======================================================================*/
 
-
--- TODO:
---   * Fill in your name above and a brief description.
---   * Implement the Part 1 schema as per the homework instructions.
---   * Populate each table according to the homework instructions.
---   * Be sure each table has a comment describing its purpose.
---   * Be sure to add comments as needed for attributes.
---   * Be sure your SQL code is well formatted (according to the style guides).
-
 -- dropping tables
 DROP TABLE IF EXISTS border CASCADE;
 DROP TABLE IF EXISTS city CASCADE;
@@ -75,7 +66,12 @@ INSERT INTO province (province_name, country_code, area) VALUES
 ('Bangkok', 'TH', 1569),
 ('Chiang Mai', 'TH', 20107),
 ('Phuket', 'TH', 576),
-('Chonburi', 'TH', 4536);
+('Chonburi', 'TH', 4536),
+-- Additional provinces for new cities
+('Illinois', 'US', 149998),
+('Missouri', 'US', 180533),
+('Wisconsin', 'US', 169634),
+('Alabama', 'US', 135767);
 
 /*======================================================================
 *   Table: city
@@ -171,7 +167,12 @@ INSERT INTO city (city_name, province_name, country_code, population) VALUES
 ('Chonburi', 'Chonburi', 'TH', 350000),
 ('Pattaya', 'Chonburi', 'TH', 320000),
 ('Si Racha', 'Chonburi', 'TH', 300000),
-('Bang Saen', 'Chonburi', 'TH', 150000);
+('Bang Saen', 'Chonburi', 'TH', 150000),
+-- Additional cities with identical populations for Query 7 testing
+('Springfield', 'Illinois', 'US', 100000),
+('Springfield', 'Missouri', 'US', 100000),
+('Madison', 'Wisconsin', 'US', 250000),
+('Madison', 'Alabama', 'US', 250000);
 
 /*======================================================================
 *   Table: border
