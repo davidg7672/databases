@@ -17,6 +17,9 @@
 
 ##### Homework 3
 
+-   More table creation
+-   Simple queries
+
 ## Author
 
 -   David Sosa - dsosavidal@zagmail.gonzaga.edu

@@ -39,7 +39,7 @@ INSERT INTO country (country_code, country_name, gdp, inflation) VALUES
 ('US', 'United States of America', 21433, 1.8),
 ('MX', 'Mexico', 12600, 4.2),
 ('CA', 'Canada', 17364, 2.1),
-('TH', 'Thailand', 5437, 1.0);
+('TH', 'Thailand', 5437, 1.9);
 
 
 /*======================================================================
