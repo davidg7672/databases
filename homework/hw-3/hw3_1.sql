@@ -29,8 +29,9 @@ CREATE TABLE country (
 INSERT INTO country (country_code, country_name, gdp, inflation) VALUES 
 ('US', 'United States of America', 21433, 1.8),
 ('MX', 'Mexico', 12600, 4.2),
-('CA', 'Canada', 17364, 2.1),
-('TH', 'Thailand', 5437, 1.9);
+('CA', 'Canada', 21433, 2.1),
+('TH', 'Thailand', 5437, 1.9),
+('BR', 'Brazil', 18000, 4.2);
 
 
 /*======================================================================
@@ -67,6 +68,11 @@ INSERT INTO province (province_name, country_code, area) VALUES
 ('Chiang Mai', 'TH', 20107),
 ('Phuket', 'TH', 576),
 ('Chonburi', 'TH', 4536),
+-- BR (4 provinces)
+('São Paulo State', 'BR', 248219),
+('Rio de Janeiro State', 'BR', 43696),
+('Bahia', 'BR', 564733),
+('Minas Gerais', 'BR', 586528),
 -- Additional provinces for new cities
 ('Illinois', 'US', 149998),
 ('Missouri', 'US', 180533),
@@ -168,6 +174,26 @@ INSERT INTO city (city_name, province_name, country_code, population) VALUES
 ('Pattaya', 'Chonburi', 'TH', 320000),
 ('Si Racha', 'Chonburi', 'TH', 300000),
 ('Bang Saen', 'Chonburi', 'TH', 150000),
+-- BR: São Paulo State (4)
+('São Paulo', 'São Paulo State', 'BR', 12300000),
+('Guarulhos', 'São Paulo State', 'BR', 1392000),
+('Campinas', 'São Paulo State', 'BR', 1213000),
+('São Bernardo do Campo', 'São Paulo State', 'BR', 844000),
+-- BR: Rio de Janeiro State (4)
+('Rio de Janeiro', 'Rio de Janeiro State', 'BR', 6748000),
+('São Gonçalo', 'Rio de Janeiro State', 'BR', 1091000),
+('Duque de Caxias', 'Rio de Janeiro State', 'BR', 919000),
+('Nova Iguaçu', 'Rio de Janeiro State', 'BR', 821000),
+-- BR: Bahia (4)
+('Salvador', 'Bahia', 'BR', 2900000),
+('Feira de Santana', 'Bahia', 'BR', 619000),
+('Vitória da Conquista', 'Bahia', 'BR', 341000),
+('Camaçari', 'Bahia', 'BR', 304000),
+-- BR: Minas Gerais (4)
+('Belo Horizonte', 'Minas Gerais', 'BR', 2521000),
+('Uberlândia', 'Minas Gerais', 'BR', 691000),
+('Contagem', 'Minas Gerais', 'BR', 668000),
+('Juiz de Fora', 'Minas Gerais', 'BR', 568000),
 -- Additional cities with identical populations for Query 7 testing
 ('Springfield', 'Illinois', 'US', 100000),
 ('Springfield', 'Missouri', 'US', 100000),
