@@ -74,7 +74,7 @@ CREATE TABLE flight(
     flight_number INT NOT NULL,
     departure CHAR(3) NOT NULL,
     arrival CHAR(3) NOT NULL,
-    flights_per_wk INT CHECK (flights_per_wk >= 0),
+    flights_per_wk INT CHECK (flights_per_wk >= 0) NOT NULL,
     PRIMARY KEY (airline, flight_number),
     FOREIGN KEY (airline) REFERENCES airline(code),
     FOREIGN KEY (departure) REFERENCES airport(id),

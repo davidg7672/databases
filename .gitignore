@@ -1,5 +1,9 @@
 __pycache__/
+exams/
 notes/
 config.py
 example-config.py
 
+config.py
+example_config.py
+.DS_example
