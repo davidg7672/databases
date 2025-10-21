@@ -1,0 +1,64 @@
+
+#include <iostream>
+#include <pqxx/pqxx>
+#include "config.h"
+
+using namespace std;
+using namespace pqxx;
+
+int main()
+{
+  try {
+    // connection info
+    string usr = config::USER;
+    string pwd = config::PASSWORD;
+    string hst = config::HOST;
+    string dat = config::DATABASE;
+    string url = "postgresql://" + usr + ":" + pwd + "@" + hst + "/" + dat;
+    
+    // create a connection
+    connection cx{url};
+    work tx(cx);
+
+    // get a pet id, make sure it is unique
+    cout << "Please enter a pet id: ";
+    int id;
+    cin >> id;
+    cin.ignore();
+    string q = "SELECT * FROM pet WHERE id = $1";
+    cx.prepare("q1", q);
+    result r{tx.exec_prepared("q1", id)};
+    if (!r.empty()) {
+      cout << "This pet id is already taken" << endl;
+      return 1;
+    }
+    
+    // get pet name, breed, type, bday, and size
+    cout << "Please enter the pet's name: ";
+    string name;
+    getline(cin, name);
+    cout << "Please enter the pet's type (dog, cat, etc): ";
+    string type;
+    getline(cin, type);
+    cout << "Please enter the pet's birthdate ('YYYY/MM/DD'): ";
+    string date;
+    getline(cin, date);
+
+    // execute insert
+    q = "INSERT INTO pet VALUES ($1, $2, $3, $4)";
+    cx.prepare("i1", q);
+    tx.exec_prepared("i1", id, name, type, date);
+
+    // needed here to make the insert (database update) stick!
+    tx.commit();
+
+  }
+  catch (sql_error const &e) {
+    cerr << "SQL error: " << e.what() << endl;
+    return 1;
+  }
+  catch (exception const &e) {
+    cerr << "Error: " << e.what() << endl;
+    return 1;
+  }
+}
