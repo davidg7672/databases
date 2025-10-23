@@ -34,18 +34,18 @@ def add_country(cn):
     country_gdp = int(input("Country per capita gdp (USD)..: "))
     country_inflation = float(input("Country inflation (pct).......: "))
     
-    q1 = 'SELECT * FROM country c'
+    q1 = 'SELECT * FROM country WHERE country_code = %s'
     q2 = 'INSERT INTO country VALUES (%s, %s, %s, %s);'
     
     with cn.cursor() as rs:
-        rs.execute(q1)
+        rs.execute(q1, (country_code,))
+        country = rs.fetchone()
         
-        for row in rs:
-            # checking to see if the country is already in the db
-            if row[0] == country_code:
-                print("Country already in DB!\n")
-                rs.close()
-                return
+        if country:
+            print("Country already in DB!\n")
+            rs.close()
+            return
+        
         rs.execute(q2, (country_code, country_name, country_gdp, country_inflation))
         print("Successfully Added Country\n")
         rs.close()
@@ -65,8 +65,9 @@ def add_border(cn):
     with cn.cursor() as rs:
         rs.execute(q1)
         for row in rs:
-            if row[0] == country_code_1 and row[1] == country_code_2:
-                print("Border already exists!")
+            # Check both directions - border could exist either way
+            if (row[0] == country_code_1 and row[1] == country_code_2) or (row[0] == country_code_2 and row[1] == country_code_1):
+                print("Border already exists!\n")
                 return
         rs.execute(q2, (country_code_1, country_code_2, border_length))
         print("Successfully Added Border\n")
@@ -83,7 +84,7 @@ def find_countries(cn):
     min_inflation = float(input("Minimum inflation (pct).......: "))
     max_inflation = float(input("Maximum inflation (pct).......: "))
     
-    q = 'SELECT * FROM country c WHERE (c.gdp >= %s AND c.gdp <= %s) AND (c.inflation >= %s AND c.inflation <= %s)'
+    q = 'SELECT * FROM country c WHERE (c.gdp >= %s AND c.gdp <= %s) AND (c.inflation >= %s AND c.inflation <= %s) ORDER BY c.gdp DESC, c.inflation ASC'
     with cn.cursor() as rs:
         rs.execute(q, (min_gdp, max_gdp, min_inflation, max_inflation))
         for row in rs:
@@ -95,8 +96,25 @@ Function: update_country()
 Description: Updates a country's GDP and inflation values in database
 """
 def update_country(cn):
+    country_code = input("Country code..................: ").upper()
+    country_gdp = int(input("Country per capita gdp (USD)..: "))
+    country_inflation = float(input("Country inflation (pct).......: "))
     
-    pass
+    q1 = 'SELECT * FROM country WHERE country_code = %s'
+    q2 = 'UPDATE country SET gdp = %s, inflation = %s WHERE country_code = %s'
+    
+    with cn.cursor() as rs:
+        rs.execute(q1, (country_code,))
+        country = rs.fetchone()
+        
+        if not country:
+            print("Country does not exist!\n")
+            rs.close()
+            return
+        
+        rs.execute(q2, (country_gdp, country_inflation, country_code))
+        print("Successfully Updated Country\n")
+        rs.close()
 
 """
 Function: remove_border()
@@ -106,22 +124,21 @@ def remove_border(cn):
     country_code_1 = input("Country code 1..: ")
     country_code_2 = input("Country code 2..: ")
     
-    q1 = 'SELECT * FROM border b WHERE (country_code_1 = %s AND country_code_2 = %s) OR (b.country_code_1 = %s AND b.country_code_2)'
-    q2 = 'DELETE FROM border WHERE (country_code_1 = %s AND country_code_2 = %s) OR (country_code_1 = %s AND country_code_2 = %)'
+    q1 = 'SELECT * FROM border WHERE (country_code_1 = %s AND country_code_2 = %s) OR (country_code_1 = %s AND country_code_2 = %s)'
+    q2 = 'DELETE FROM border WHERE (country_code_1 = %s AND country_code_2 = %s) OR (country_code_1 = %s AND country_code_2 = %s)'
     
-    with cn.cursor as rs:
+    with cn.cursor() as rs:
         rs.execute(q1, (country_code_1, country_code_2, country_code_2, country_code_1))
-        border = rs.getOne()
-        
+        border = rs.fetchone()
         
         if not border:
-            print("Border doesn't exist")
+            print("Border doesn't exist!\n")
             rs.close()
             return
         
-        
-
-    pass
+        rs.execute(q2, (country_code_1, country_code_2, country_code_2, country_code_1))
+        print("Successfully Removed Border\n")
+        rs.close()
 
 """
 Function: print_menu()
