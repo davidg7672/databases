@@ -1,27 +1,132 @@
+"""
+ * 
+ *  NAME:    David Sosa
+ *  ASSIGN:  HW-5
+ *  COURSE:  CPSC 321, Fall 2025
+ *  DESC:    Dynamic SQL demonstrated with Python.
+ *           CRUD, functions supported via database
+"""
+
 import psycopg as pg
 import config
 
+"""
+Function: list_countries()
+Description: Queries database and prints out all countries
+"""
 def list_countries(cn):
-    q = 'SELECT * FROM countries;'
+    q = 'SELECT * FROM country;'
     with cn.cursor() as rs:
         rs.execute(q)
+        print()
+        for row in rs:
+            print(f'{row[1]} ({row[0]}), per capita gdp ${row[2]}, inflation rate {row[3]}%')
+        print()
         rs.close()
 
+"""
+Function: add_country()
+Description: Prompts user for country details and inserts new country into database
+"""
 def add_country(cn):
-    pass
+    country_code = input("Country code..................: ").upper()
+    country_name = input("Country name..................: ")
+    country_gdp = int(input("Country per capita gdp (USD)..: "))
+    country_inflation = float(input("Country inflation (pct).......: "))
+    
+    q1 = 'SELECT * FROM country c'
+    q2 = 'INSERT INTO country VALUES (%s, %s, %s, %s);'
+    
+    with cn.cursor() as rs:
+        rs.execute(q1)
+        
+        for row in rs:
+            # checking to see if the country is already in the db
+            if row[0] == country_code:
+                print("Country already in DB!\n")
+                rs.close()
+                return
+        rs.execute(q2, (country_code, country_name, country_gdp, country_inflation))
+        print("Successfully Added Country\n")
+        rs.close()
 
+"""
+Function: add_border()
+Description: Prompts user for two country codes and border length, then adds border to database
+"""
 def add_border(cn):
-    pass
+    country_code_1 = input("Country code 1..: ")
+    country_code_2 = input("Country code 2..: ")
+    border_length = input("Border length...: ")
+    
+    q1 = 'SELECT * FROM border;'
+    q2 = 'INSERT INTO border VALUES (%s, %s, %s);'
+    
+    with cn.cursor() as rs:
+        rs.execute(q1)
+        for row in rs:
+            if row[0] == country_code_1 and row[1] == country_code_2:
+                print("Border already exists!")
+                return
+        rs.execute(q2, (country_code_1, country_code_2, border_length))
+        print("Successfully Added Border\n")
+        rs.close()
 
+
+"""
+Function: find_countries()
+Description: Searches and displays countries within specified GDP and inflation ranges
+"""
 def find_countries(cn):
-    pass
+    min_gdp = int(input("Minimum per capita gdp (USD)..: "))
+    max_gdp = int(input("Maximum per capita gdp (USD)..: "))
+    min_inflation = float(input("Minimum inflation (pct).......: "))
+    max_inflation = float(input("Maximum inflation (pct).......: "))
+    
+    q = 'SELECT * FROM country c WHERE (c.gdp >= %s AND c.gdp <= %s) AND (c.inflation >= %s AND c.inflation <= %s)'
+    with cn.cursor() as rs:
+        rs.execute(q, (min_gdp, max_gdp, min_inflation, max_inflation))
+        for row in rs:
+            print(f"{row[1]} {row[0]}, per capita gdp ${row[2]}, inflation rate {row[3]}%")
+        rs.close()
 
+"""
+Function: update_country()
+Description: Updates a country's GDP and inflation values in database
+"""
 def update_country(cn):
+    
     pass
 
+"""
+Function: remove_border()
+Description: Removes a border between two countries from database
+"""
 def remove_border(cn):
+    country_code_1 = input("Country code 1..: ")
+    country_code_2 = input("Country code 2..: ")
+    
+    q1 = 'SELECT * FROM border b WHERE (country_code_1 = %s AND country_code_2 = %s) OR (b.country_code_1 = %s AND b.country_code_2)'
+    q2 = 'DELETE FROM border WHERE (country_code_1 = %s AND country_code_2 = %s) OR (country_code_1 = %s AND country_code_2 = %)'
+    
+    with cn.cursor as rs:
+        rs.execute(q1, (country_code_1, country_code_2, country_code_2, country_code_1))
+        border = rs.getOne()
+        
+        
+        if not border:
+            print("Border doesn't exist")
+            rs.close()
+            return
+        
+        
+
     pass
 
+"""
+Function: print_menu()
+Description: Displays menu options and returns user's choice
+"""
 def print_menu():
     menu = [
         "List countries",
@@ -38,6 +143,10 @@ def print_menu():
     
     return input("Enter your choice (1-7): ")
 
+"""
+Function: connect_db()
+Description: Establishes and returns connection to PostgreSQL database using config settings
+"""
 def connect_db():
     hst=config.HOST
     usr=config.USER
@@ -46,6 +155,10 @@ def connect_db():
     
     return pg.connect(host=hst, user=usr, password=pwd, dbname=dat)
 
+"""
+Function: main()
+Description: Main program loop that connects to database and processes user menu choices
+"""
 def main():
     # establishing a connection
     cn = connect_db()
