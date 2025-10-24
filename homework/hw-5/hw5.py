@@ -47,6 +47,7 @@ def add_country(cn):
             return
         
         rs.execute(q2, (country_code, country_name, country_gdp, country_inflation))
+        cn.commit()
         print("Successfully Added Country\n")
         rs.close()
 
@@ -55,21 +56,39 @@ Function: add_border()
 Description: Prompts user for two country codes and border length, then adds border to database
 """
 def add_border(cn):
-    country_code_1 = input("Country code 1..: ")
-    country_code_2 = input("Country code 2..: ")
-    border_length = input("Border length...: ")
+    country_code_1 = input("Country code 1..: ").upper()
+    country_code_2 = input("Country code 2..: ").upper()
+    border_length = int(input("Border length...: "))
     
-    q1 = 'SELECT * FROM border;'
-    q2 = 'INSERT INTO border VALUES (%s, %s, %s);'
+    # Check if border already exists (in either direction)
+    q1 = 'SELECT * FROM border WHERE (country_code_1 = %s AND country_code_2 = %s) OR (country_code_1 = %s AND country_code_2 = %s)'
+    # Check if both countries exist
+    q2 = 'SELECT * FROM country WHERE country_code = %s'
+    q3 = 'INSERT INTO border VALUES (%s, %s, %s);'
     
     with cn.cursor() as rs:
-        rs.execute(q1)
-        for row in rs:
-            # Check both directions - border could exist either way
-            if (row[0] == country_code_1 and row[1] == country_code_2) or (row[0] == country_code_2 and row[1] == country_code_1):
-                print("Border already exists!\n")
-                return
-        rs.execute(q2, (country_code_1, country_code_2, border_length))
+        # Check if border already exists
+        rs.execute(q1, (country_code_1, country_code_2, country_code_2, country_code_1))
+        if rs.fetchone():
+            print("Border already exists!\n")
+            rs.close()
+            return
+        
+        # Check if both countries exist
+        rs.execute(q2, (country_code_1,))
+        if not rs.fetchone():
+            print(f"Country {country_code_1} does not exist!\n")
+            rs.close()
+            return
+        
+        rs.execute(q2, (country_code_2,))
+        if not rs.fetchone():
+            print(f"Country {country_code_2} does not exist!\n")
+            rs.close()
+            return
+        
+        rs.execute(q3, (country_code_1, country_code_2, border_length))
+        cn.commit()
         print("Successfully Added Border\n")
         rs.close()
 
@@ -87,8 +106,15 @@ def find_countries(cn):
     q = 'SELECT * FROM country c WHERE (c.gdp >= %s AND c.gdp <= %s) AND (c.inflation >= %s AND c.inflation <= %s) ORDER BY c.gdp DESC, c.inflation ASC'
     with cn.cursor() as rs:
         rs.execute(q, (min_gdp, max_gdp, min_inflation, max_inflation))
-        for row in rs:
-            print(f"{row[1]} {row[0]}, per capita gdp ${row[2]}, inflation rate {row[3]}%")
+        results = rs.fetchall()
+        
+        if not results:
+            print("No countries found matching those criteria.\n")
+        else:
+            print()
+            for row in results:
+                print(f"{row[1]} {row[0]}, per capita gdp ${row[2]}, inflation rate {row[3]}%")
+            print()
         rs.close()
 
 """
@@ -113,6 +139,7 @@ def update_country(cn):
             return
         
         rs.execute(q2, (country_gdp, country_inflation, country_code))
+        cn.commit()
         print("Successfully Updated Country\n")
         rs.close()
 
@@ -121,8 +148,8 @@ Function: remove_border()
 Description: Removes a border between two countries from database
 """
 def remove_border(cn):
-    country_code_1 = input("Country code 1..: ")
-    country_code_2 = input("Country code 2..: ")
+    country_code_1 = input("Country code 1..: ").upper()
+    country_code_2 = input("Country code 2..: ").upper()
     
     q1 = 'SELECT * FROM border WHERE (country_code_1 = %s AND country_code_2 = %s) OR (country_code_1 = %s AND country_code_2 = %s)'
     q2 = 'DELETE FROM border WHERE (country_code_1 = %s AND country_code_2 = %s) OR (country_code_1 = %s AND country_code_2 = %s)'
@@ -137,6 +164,7 @@ def remove_border(cn):
             return
         
         rs.execute(q2, (country_code_1, country_code_2, country_code_2, country_code_1))
+        cn.commit()
         print("Successfully Removed Border\n")
         rs.close()
 
