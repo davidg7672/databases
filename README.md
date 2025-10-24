@@ -20,6 +20,15 @@
 -   More table creation
 -   Simple queries
 
+#### Homework 4
+
+-   More advanced quires with set operations.
+-   Intro to dynamic SQL
+
+#### Homework 5
+
+-   Dynamic SQL
+
 ## Author
 
 -   David Sosa - dsosavidal@zagmail.gonzaga.edu

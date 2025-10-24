@@ -182,11 +182,12 @@ def print_menu():
         "Remove Border",
         "Exit"
     ]
-
+    
+    print()
     for i, item in enumerate(menu, start=1):
         print(f"{i}. {item}")
     
-    return input("Enter your choice (1-7): ")
+    return input("\nEnter your choice (1-7): ")
 
 """
 Function: connect_db()
