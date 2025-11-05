@@ -108,6 +108,7 @@ def find_countries(cn):
         rs.execute(q, (min_gdp, max_gdp, min_inflation, max_inflation))
         results = rs.fetchall()
         
+        # checking if there are any results
         if not results:
             print("No countries found matching those criteria.\n")
         else:
@@ -133,6 +134,7 @@ def update_country(cn):
         rs.execute(q1, (country_code,))
         country = rs.fetchone()
         
+        # checking if country exists
         if not country:
             print("Country does not exist!\n")
             rs.close()
@@ -158,6 +160,8 @@ def remove_border(cn):
         rs.execute(q1, (country_code_1, country_code_2, country_code_2, country_code_1))
         border = rs.fetchone()
         
+        # if nothing is there, we can't delete it
+        # therefore, we say it doesn't exist.
         if not border:
             print("Border doesn't exist!\n")
             rs.close()
